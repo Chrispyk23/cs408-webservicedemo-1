@@ -44,10 +44,10 @@ public class MainActivity extends AppCompatActivity {
 
         // Set Button Listeners (to initiate GET/POST requests)
 
-        binding.getButton.setOnClickListener(new View.OnClickListener() {
+        binding.deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                model.sendGetRequest();
+                model.sendDeleteRequest();
             }
         });
 
@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 model.sendPostRequest();
+                model.setPostMessage(binding.input.toString());
             }
         });
 
@@ -68,4 +69,3 @@ public class MainActivity extends AppCompatActivity {
         binding.output.setText(s);
     }
 
-}

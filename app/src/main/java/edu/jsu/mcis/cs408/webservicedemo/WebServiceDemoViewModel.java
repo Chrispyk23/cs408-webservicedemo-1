@@ -22,14 +22,15 @@ public class WebServiceDemoViewModel extends ViewModel {
 
     private static final String TAG = "WebServiceDemoViewModel";
 
-    private static final String GET_URL = "http://jsonplaceholder.typicode.com/todos/1";
-    private static final String POST_URL = "http://jsonplaceholder.typicode.com/posts";
+    private static final String GET_URL = "http://ec2-3-143-211-101.us-east-2.compute.amazonaws.com/CS408_SimpleChat/Chat\"";
+    private static final String POST_URL = "http://ec2-3-143-211-101.us-east-2.compute.amazonaws.com/CS408_SimpleChat/Chat\"";
 
     private MutableLiveData<JSONObject> jsonData;
 
     private final ExecutorService requestThreadExecutor;
     private final Runnable httpGetRequestThread, httpPostRequestThread;
     private Future<?> pending;
+    private String message;
 
     public WebServiceDemoViewModel() {
 
@@ -102,6 +103,9 @@ public class WebServiceDemoViewModel extends ViewModel {
         return jsonData;
     }
 
+    public void setPostMessage(String toString) {
+    }
+
     // Private Class for HTTP Request Threads
 
     private class HTTPRequestTask implements Runnable {
@@ -156,9 +160,15 @@ public class WebServiceDemoViewModel extends ViewModel {
 
                     conn.setDoOutput(true);
 
+                    JSONObject json = new JSONObject();
+
                     // Create example parameters (these will be echoed back by the API)
 
-                    String p = "name=Jack+Flack&userid=2001";
+
+                    json.put("name", "User");
+                    json.put("message", message);
+
+                    String p = json.toString();
 
                     // Write parameters to request body
 
