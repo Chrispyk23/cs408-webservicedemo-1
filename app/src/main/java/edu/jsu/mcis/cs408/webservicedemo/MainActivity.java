@@ -39,11 +39,13 @@ public class MainActivity extends AppCompatActivity {
         };
 
         // Observe the JSON LiveData
+        model.sendGetRequest();
+
 
         model.getJsonData().observe(this, jsonObserver);
 
         // Set Button Listeners (to initiate GET/POST requests)
-
+        // Had to create method in WebserviceDemoModel
         binding.deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -68,4 +70,8 @@ public class MainActivity extends AppCompatActivity {
     private void setOutputText(String s) {
         binding.output.setText(s);
     }
+
+}
+
+//last touch to the program
 

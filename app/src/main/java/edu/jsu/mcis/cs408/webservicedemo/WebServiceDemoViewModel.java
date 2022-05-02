@@ -1,5 +1,5 @@
 package edu.jsu.mcis.cs408.webservicedemo;
-
+//all given imports
 import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
@@ -22,15 +22,16 @@ public class WebServiceDemoViewModel extends ViewModel {
 
     private static final String TAG = "WebServiceDemoViewModel";
 
-    private static final String GET_URL = "http://ec2-3-143-211-101.us-east-2.compute.amazonaws.com/CS408_SimpleChat/Chat\"";
-    private static final String POST_URL = "http://ec2-3-143-211-101.us-east-2.compute.amazonaws.com/CS408_SimpleChat/Chat\"";
+    //serves as the post and get request url
+    private static final String URLS = "http://ec2-3-143-211-101.us-east-2.compute.amazonaws.com/CS408_SimpleChat/Chat\"";
+
 
     private MutableLiveData<JSONObject> jsonData;
 
     private final ExecutorService requestThreadExecutor;
-    private final Runnable httpGetRequestThread, httpPostRequestThread;
+    private final Runnable httpGetRequestThread, httpPostRequestThread, httpDeleteRequestThread;//Added delete request thread to Runnable field.
     private Future<?> pending;
-    private String message;
+    private String chat;
 
     public WebServiceDemoViewModel() {
 
@@ -48,13 +49,33 @@ public class WebServiceDemoViewModel extends ViewModel {
                 /* Begin new request now, but don't wait for it */
 
                 try {
-                    pending = requestThreadExecutor.submit(new HTTPRequestTask("GET", GET_URL));
+                    pending = requestThreadExecutor.submit(new HTTPRequestTask("GET", URLS));
                 }
                 catch (Exception e) { Log.e(TAG, " Exception: ", e); }
 
             }
 
         };
+        httpDeleteRequestThread = new Runnable() {
+
+            @Override
+            public void run() {
+
+                /* If a previous request is still pending, cancel it */
+
+                if (pending != null) { pending.cancel(true); }
+
+                /* Begin new request now, but don't wait for it */
+
+                try {
+                    pending = requestThreadExecutor.submit(new HTTPRequestTask("DELETE", URLS));
+                }
+                catch (Exception e) { Log.e(TAG, " Exception: ", e); }
+
+            }
+
+        };
+
 
         httpPostRequestThread = new Runnable() {
 
@@ -68,7 +89,7 @@ public class WebServiceDemoViewModel extends ViewModel {
                 /* Begin new request now, but don't wait for it */
 
                 try {
-                    pending = requestThreadExecutor.submit(new HTTPRequestTask("POST", POST_URL));
+                    pending = requestThreadExecutor.submit(new HTTPRequestTask("POST", URLS));
                 }
                 catch (Exception e) { Log.e(TAG, " Exception: ", e); }
 
@@ -90,6 +111,8 @@ public class WebServiceDemoViewModel extends ViewModel {
         httpPostRequestThread.run();
     }
 
+    public void sendDeleteRequest(){ httpDeleteRequestThread.run();}
+
     // Setter / Getter Methods for JSON LiveData
 
     private void setJsonData(JSONObject json) {
@@ -103,8 +126,12 @@ public class WebServiceDemoViewModel extends ViewModel {
         return jsonData;
     }
 
+
+
     public void setPostMessage(String toString) {
+        this.chat = toString;
     }
+
 
     // Private Class for HTTP Request Threads
 
@@ -165,8 +192,8 @@ public class WebServiceDemoViewModel extends ViewModel {
                     // Create example parameters (these will be echoed back by the API)
 
 
-                    json.put("name", "User");
-                    json.put("message", message);
+                    json.put("name", "Username");
+                    json.put("message", chat);
 
                     String p = json.toString();
 
